@@ -1,26 +1,27 @@
 <?php
 
+namespace Abyzs\VetmanagerVisits;
+
 use GuzzleHttp\Client;
-use Otis22\VetmanagerRestApi\Headers\WithAuth;
-use Otis22\VetmanagerRestApi\Headers\Auth\ByApiKey;
+use DateTime;
+use DateInterval;
 use Otis22\VetmanagerRestApi\Headers\Auth\ApiKey;
-use Otis22\VetmanagerRestApi\Query\Query;
-use Otis22\VetmanagerRestApi\Query\PagedQuery;
-use Otis22\VetmanagerRestApi\Query\Filters;
+use Otis22\VetmanagerRestApi\Headers\Auth\ByApiKey;
+use Otis22\VetmanagerRestApi\Headers\WithAuth;
+use Otis22\VetmanagerRestApi\Model;
+use Otis22\VetmanagerRestApi\Model\Property;
 use Otis22\VetmanagerRestApi\Query\Filter\NotInArray;
 use Otis22\VetmanagerRestApi\Query\Filter\Value\ArrayValue;
-use Otis22\VetmanagerRestApi\Query\Sorts;
+use Otis22\VetmanagerRestApi\Query\Filters;
+use Otis22\VetmanagerRestApi\Query\PagedQuery;
+use Otis22\VetmanagerRestApi\Query\Query;
 use Otis22\VetmanagerRestApi\Query\Sort\AscBy;
-use Otis22\VetmanagerRestApi\Model\Property;
+use Otis22\VetmanagerRestApi\Query\Sorts;
 use Otis22\VetmanagerRestApi\URI\OnlyModel;
-use Otis22\VetmanagerRestApi\Model;
-use GuzzleHttp\HandlerStack;
-use Spatie\GuzzleRateLimiterMiddleware\RateLimiterMiddleware;
 use function Otis22\VetmanagerUrl\url;
 
-Class VisitCounter
+class VisitCounter
 {
-
     protected $domain;
     protected WithAuth $api;
     protected array $result = [];
@@ -43,12 +44,7 @@ Class VisitCounter
 
     public function getInvoices(): array
     {
-        $stack = HandlerStack::create();
-        $stack->push(RateLimiterMiddleware::perSecond(3));
-
-        $client = new Client(['handler' => $stack, 'base_uri' => url($this->domain)->asString()]);
-
-
+        $client = new Client(['base_uri' => url($this->domain)->asString()]);
 
         $uri = new OnlyModel(
             new Model('invoice')

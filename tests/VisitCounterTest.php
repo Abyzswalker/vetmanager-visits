@@ -1,30 +1,25 @@
 <?php
 
-use PHPUnit\Framework\TestCase;
+namespace Abyzs\VetmanagerVisits;
 
+use PHPUnit\Framework\TestCase;
 
 
 class VisitCounterTest extends TestCase
 {
-
     protected VisitCounter $visitCounter;
 
     /**
      * @var void
      */
-    
-
-    protected function setUp(): void {
-
+    protected function setUp(): void
+    {
         $this->visitCounter = new VisitCounter('abyzs', 'API_KEY');
+    }
 
-        }
-
-
-    public function testGetInvoices(): void {
-
+    public function testGetInvoices(): void
+    {
         $this->assertIsArray($this->visitCounter->getInvoices());
-
     }
 
     public function testGetDayCount(): void
@@ -41,7 +36,6 @@ class VisitCounterTest extends TestCase
 
         $result = $method->invoke($obj, $arr);
         $this->assertCount(1, $result);
-
     }
 
     public function testGetWeekCount(): void
@@ -61,6 +55,5 @@ class VisitCounterTest extends TestCase
 
         $result = $method->invoke($obj, $arr);
         $this->assertCount(2, $result);
-
     }
 }
