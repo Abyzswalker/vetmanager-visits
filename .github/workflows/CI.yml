@@ -5,9 +5,6 @@ on: [push, pull_request]
 jobs:
   build:
     runs-on: ubuntu-latest
-    env:
-      TEST_API_KEY: ${{ secrets.TEST_API_KEY }}
-      TEST_DOMAIN_NAME: ${{ secrets.TEST_DOMAIN_NAME }}
     strategy:
       matrix:
         php-versions: ['7.4', '8.0']
@@ -36,6 +33,9 @@ jobs:
         run: |
           composer static-analyze
       - name: Run tests
+        env:
+          TEST_API_KEY: ${{ secrets.TEST_API_KEY }}
+          TEST_DOMAIN_NAME: ${{ secrets.TEST_DOMAIN_NAME }}
         run: |
           composer unit
       - name: Check coverage
@@ -47,5 +47,3 @@ jobs:
         run: |
           composer global require php-coveralls/php-coveralls
           php-coveralls --coverage_clover=build/logs/clover.xml -v
-      - name: Run PHPUnit
-        run: php7.4 vendor/bin/phpunit tests/visitCounterTest.php

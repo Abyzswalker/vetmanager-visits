@@ -2,9 +2,9 @@
 
 namespace Abyzs\VetmanagerVisits;
 
-use GuzzleHttp\Client;
 use DateTime;
 use DateInterval;
+use GuzzleHttp\Client;
 use Otis22\VetmanagerRestApi\Headers\Auth\ApiKey;
 use Otis22\VetmanagerRestApi\Headers\Auth\ByApiKey;
 use Otis22\VetmanagerRestApi\Headers\WithAuth;
@@ -36,12 +36,11 @@ class VisitCounter
         );
     }
 
+
     /**
      * @throws \GuzzleHttp\Exception\GuzzleException
-     * @throws Exception
+     * @throws \Exception
      */
-
-
     public function getInvoices(): array
     {
         $client = new Client(['base_uri' => url($this->domain)->asString()]);
@@ -90,11 +89,8 @@ class VisitCounter
         return $this->result;
     }
 
-    /**
-     * @throws \GuzzleHttp\Exception\GuzzleException
-     */
 
-    private function getDayCount($array): array
+    public function getDayCount($array): array
     {
         $dayCount = [];
         $today = date("Y-m-d 00:00:00");
@@ -120,10 +116,6 @@ class VisitCounter
         return count($dayCount);
     }
 
-    /**
-     * @throws \GuzzleHttp\Exception\GuzzleException
-     */
-
     private function getWeekCount($array): array
     {
         $weekCount = [];
@@ -140,6 +132,9 @@ class VisitCounter
         return $weekCount;
     }
 
+    /**
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
     public function weekCount(): int
     {
         $weekCount = $this->getWeekCount($this->getInvoices());

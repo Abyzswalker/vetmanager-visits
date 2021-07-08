@@ -2,6 +2,9 @@
 
 namespace Abyzs\VetmanagerVisits;
 
+use DateTime;
+use DateInterval;
+use ReflectionClass;
 use PHPUnit\Framework\TestCase;
 
 
@@ -14,14 +17,22 @@ class VisitCounterTest extends TestCase
      */
     protected function setUp(): void
     {
-        $this->visitCounter = new VisitCounter('abyzs', 'API_KEY');
+        parent::setUp();
+        $this->visitCounter = new VisitCounter(getenv('TEST_DOMAIN_NAME'), getenv('TEST_API_KEY'));
+
     }
 
+    /**
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
     public function testGetInvoices(): void
     {
         $this->assertIsArray($this->visitCounter->getInvoices());
     }
 
+    /**
+     * @throws \ReflectionException
+     */
     public function testGetDayCount(): void
     {
         $today = date("Y-m-d 00:00:00");
@@ -29,7 +40,7 @@ class VisitCounterTest extends TestCase
             ['invoice_date' => $today],
             ['invoice_date' => '2021-07-02 23:59:59']
         );
-        $class = new ReflectionClass('VisitCounter');
+        $class = new ReflectionClass(VisitCounter::class);
         $method = $class->getMethod('getDayCount');
         $method->setAccessible(true);
         $obj = new VisitCounter('test', 'test_api');
@@ -38,6 +49,9 @@ class VisitCounterTest extends TestCase
         $this->assertCount(1, $result);
     }
 
+    /**
+     * @throws \ReflectionException
+     */
     public function testGetWeekCount(): void
     {
         $today = date("Y-m-d 00:00:00");
@@ -48,7 +62,7 @@ class VisitCounterTest extends TestCase
             ['invoice_date' => $week],
             ['invoice_date' => '2021-06-25 07:12:15']
         );
-        $class = new ReflectionClass('VisitCounter');
+        $class = new ReflectionClass(VisitCounter::class);
         $method = $class->getMethod('getWeekCount');
         $method->setAccessible(true);
         $obj = new VisitCounter('test', 'test_api');

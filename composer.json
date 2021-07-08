@@ -1,6 +1,6 @@
 {
     "name": "abyzs/vetmanager-visits",
-    "description": "Php skeleton for small packages with most important qaulity ",
+    "description": "Php skeleton for small packages with most important qaulity",
     "license": "MIT",
     "authors": [
         {
@@ -25,12 +25,12 @@
     },
     "autoload": {
         "psr-4": {
-            "Abyzs\\VetmanagerVisits\\": "src"
+            "Abyzs\\VetmanagerVisits\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Abyzs\\VetmanagerVisits\\": "tests"
+            "Abyzs\\VetmanagerVisits\\": "tests/"
         }
     },
     "scripts": {
