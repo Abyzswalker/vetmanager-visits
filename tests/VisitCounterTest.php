@@ -2,8 +2,6 @@
 
 namespace Abyzs\VetmanagerVisits;
 
-use DateTime;
-use DateInterval;
 use ReflectionClass;
 use PHPUnit\Framework\TestCase;
 
@@ -17,9 +15,7 @@ class VisitCounterTest extends TestCase
      */
     protected function setUp(): void
     {
-        parent::setUp();
         $this->visitCounter = new VisitCounter(getenv('TEST_DOMAIN_NAME'), getenv('TEST_API_KEY'));
-
     }
 
     /**
@@ -47,27 +43,5 @@ class VisitCounterTest extends TestCase
 
         $result = $method->invoke($obj, $arr);
         $this->assertCount(1, $result);
-    }
-
-    /**
-     * @throws \ReflectionException
-     */
-    public function testGetWeekCount(): void
-    {
-        $today = date("Y-m-d 00:00:00");
-        $week = DateTime::createFromFormat('Y-m-d H:i:s', $today);
-        $week->sub(new DateInterval('P7D'));
-        $arr = Array(
-            ['invoice_date' => $today],
-            ['invoice_date' => $week],
-            ['invoice_date' => '2021-06-25 07:12:15']
-        );
-        $class = new ReflectionClass(VisitCounter::class);
-        $method = $class->getMethod('getWeekCount');
-        $method->setAccessible(true);
-        $obj = new VisitCounter('test', 'test_api');
-
-        $result = $method->invoke($obj, $arr);
-        $this->assertCount(2, $result);
     }
 }

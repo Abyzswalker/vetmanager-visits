@@ -10,12 +10,15 @@ use Otis22\VetmanagerRestApi\Headers\Auth\ByApiKey;
 use Otis22\VetmanagerRestApi\Headers\WithAuth;
 use Otis22\VetmanagerRestApi\Model;
 use Otis22\VetmanagerRestApi\Model\Property;
+use Otis22\VetmanagerRestApi\Query\Filter\LessThan;
+use Otis22\VetmanagerRestApi\Query\Filter\MoreThan;
 use Otis22\VetmanagerRestApi\Query\Filter\NotInArray;
 use Otis22\VetmanagerRestApi\Query\Filter\Value\ArrayValue;
+use Otis22\VetmanagerRestApi\Query\Filter\Value\StringValue;
 use Otis22\VetmanagerRestApi\Query\Filters;
 use Otis22\VetmanagerRestApi\Query\PagedQuery;
 use Otis22\VetmanagerRestApi\Query\Query;
-use Otis22\VetmanagerRestApi\Query\Sort\AscBy;
+use Otis22\VetmanagerRestApi\Query\Sort\DescBy;
 use Otis22\VetmanagerRestApi\Query\Sorts;
 use Otis22\VetmanagerRestApi\URI\OnlyModel;
 use function Otis22\VetmanagerUrl\url;
@@ -24,7 +27,9 @@ class VisitCounter
 {
     protected $domain;
     protected WithAuth $api;
-    protected array $result = [];
+    protected Client $client;
+    protected OnlyModel $uri;
+    public array $result = [];
 
     public function __construct($domain, $api)
     {
@@ -34,43 +39,46 @@ class VisitCounter
                 new ApiKey($api)
             )
         );
-    }
-
-
-    /**
-     * @throws \GuzzleHttp\Exception\GuzzleException
-     * @throws \Exception
-     */
-    public function getInvoices(): array
-    {
-        $client = new Client(['base_uri' => url($this->domain)->asString()]);
-
-        $uri = new OnlyModel(
+        $this->uri = new OnlyModel(
             new Model('invoice')
         );
+    }
 
+    public function getInvoices(): array
+    {
+        $this->client = new Client(['base_uri' => url($this->domain)->asString()]);
+
+        $today = date("Y-m-d 00:00:00");
+        $week = DateTime::createFromFormat('Y-m-d H:i:s', $today);
+        $week->sub(new DateInterval('P7D'));
+        $day = DateTime::createFromFormat('Y-m-d H:i:s', $today);
+        $day->add(new DateInterval('P1D'));
         $paged = PagedQuery::forGettingTop(
             new Query(
                 new Filters(
                     new NotInArray(
                         new Property('status'),
                         new ArrayValue(["save", "deleted"])
-                    )),
+                    ),
+                    new MoreThan(
+                        new Property('invoice_date'),
+                        new StringValue($week->format('Y-m-d H:i:s'))
+                    ),
+                ),
                 new Sorts(
-                    new AscBy(
+                    new DescBy(
                         new Property('id')
                     ))
             ),
             30
         );
 
-
         do {
             $response = json_decode(
                 strval(
-                    $client->request(
+                    $this->client->request(
                         'GET',
-                        $uri->asString(),
+                        $this->uri->asString(),
                         [
                             'headers' => $this->api->asKeyValue(),
                             'query' => $paged->asKeyValue()
@@ -85,36 +93,9 @@ class VisitCounter
                 $this->result
             );
         } while (count($this->result) < $response['data']['totalCount']);
-
         return $this->result;
     }
 
-
-    public function getDayCount($array): array
-    {
-        $dayCount = [];
-        $today = date("Y-m-d 00:00:00");
-        $day = DateTime::createFromFormat('Y-m-d H:i:s', $today);
-        $day->add(new DateInterval('P1D'));
-        foreach ($array as $value) {
-            if (
-                $value['invoice_date'] >= $today && $value['invoice_date'] < $day->format('Y-m-d H:i:s')
-            ) {
-                $dayCount[] = $value['invoice_date'];
-            }
-        }
-        return $dayCount;
-    }
-
-
-    /**
-     * @throws \GuzzleHttp\Exception\GuzzleException
-     */
-    public function dayCount(): int
-    {
-        $dayCount = $this->getDayCount($this->getInvoices());
-        return count($dayCount);
-    }
 
     private function getWeekCount($array): array
     {
@@ -132,16 +113,36 @@ class VisitCounter
         return $weekCount;
     }
 
-    /**
-     * @throws \GuzzleHttp\Exception\GuzzleException
-     */
+
     public function weekCount(): int
     {
         $weekCount = $this->getWeekCount($this->getInvoices());
         return count($weekCount);
     }
+
+
+    private function getDayCount($array): array
+    {
+        $dayCount = [];
+        $today = date("Y-m-d 00:00:00");
+        $day = DateTime::createFromFormat('Y-m-d H:i:s', $today);
+        $day->add(new DateInterval('P1D'));
+        foreach ($array as $value) {
+                if (
+                    $value['invoice_date'] >= $today && $value['invoice_date'] < $day->format('Y-m-d H:i:s')
+                ) {
+                    $dayCount[] = $value['invoice_date'];
+                }
+        }
+        return $dayCount;
+    }
+
+    /**
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    public function dayCount(): int
+    {
+        $dayCount = $this->getDayCount($this->getInvoices());
+        return count($dayCount);
+    }
 }
-
-
-
-
