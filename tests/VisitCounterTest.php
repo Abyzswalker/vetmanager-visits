@@ -32,10 +32,10 @@ class VisitCounterTest extends TestCase
     public function testGetDayCount(): void
     {
         $today = date("Y-m-d 00:00:00");
-        $arr = Array(
+        $arr = [
             ['invoice_date' => $today],
             ['invoice_date' => '2021-07-02 23:59:59']
-        );
+        ];
         $class = new ReflectionClass(VisitCounter::class);
         $method = $class->getMethod('getDayCount');
         $method->setAccessible(true);
