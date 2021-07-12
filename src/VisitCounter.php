@@ -45,7 +45,7 @@ class VisitCounter
 
 
     /**
-     * @return array
+     * @return array <array>
      * @throws \GuzzleHttp\Exception\GuzzleException
      * @throws \Exception
      */
@@ -100,8 +100,8 @@ class VisitCounter
     }
 
     /**
-     * @param array $array
-     * @return array
+     * @param array <array>
+     * @return array <array>
      */
     private function getWeekCount(array $array): array
     {
@@ -130,8 +130,8 @@ class VisitCounter
     }
 
     /**
-     * @param array $array
-     * @return array
+     * @param array <array>
+     * @return array <array>
      */
     private function getDayCount(array $array): array
     {
