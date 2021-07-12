@@ -35,7 +35,7 @@
     },
     "scripts": {
         "unit": "vendor/bin/phpunit",
-        "coverage": "vendor/bin/php-coverage-checker build/logs/clover.xml 100",
+        "coverage": "vendor/bin/php-coverage-checker build/logs/clover.xml 50",
         "static-analyze": "",
         "style": "vendor/bin/ecs check",
         "style-fix": "vendor/bin/ecs check --fix",
