@@ -10,7 +10,6 @@ use Otis22\VetmanagerRestApi\Headers\Auth\ByApiKey;
 use Otis22\VetmanagerRestApi\Headers\WithAuth;
 use Otis22\VetmanagerRestApi\Model;
 use Otis22\VetmanagerRestApi\Model\Property;
-use Otis22\VetmanagerRestApi\Query\Filter\LessThan;
 use Otis22\VetmanagerRestApi\Query\Filter\MoreThan;
 use Otis22\VetmanagerRestApi\Query\Filter\NotInArray;
 use Otis22\VetmanagerRestApi\Query\Filter\Value\ArrayValue;
@@ -25,13 +24,13 @@ use function Otis22\VetmanagerUrl\url;
 
 class VisitCounter
 {
-    protected $domain;
+    protected string $domain;
     protected WithAuth $api;
     protected Client $client;
     protected OnlyModel $uri;
     public array $result = [];
 
-    public function __construct($domain, $api)
+    public function __construct(string $domain, string $api)
     {
         $this->domain = $domain;
         $this->api = new WithAuth(
@@ -44,6 +43,10 @@ class VisitCounter
         );
     }
 
+    /**
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws \Exception
+     */
     public function getInvoices(): array
     {
         $this->client = new Client(['base_uri' => url($this->domain)->asString()]);
@@ -51,8 +54,6 @@ class VisitCounter
         $today = date("Y-m-d 00:00:00");
         $week = DateTime::createFromFormat('Y-m-d H:i:s', $today);
         $week->sub(new DateInterval('P7D'));
-        $day = DateTime::createFromFormat('Y-m-d H:i:s', $today);
-        $day->add(new DateInterval('P1D'));
         $paged = PagedQuery::forGettingTop(
             new Query(
                 new Filters(
@@ -97,7 +98,7 @@ class VisitCounter
     }
 
 
-    private function getWeekCount($array): array
+    private function getWeekCount(array $array): array
     {
         $weekCount = [];
         $today = date("Y-m-d 00:00:00");
@@ -114,6 +115,9 @@ class VisitCounter
     }
 
 
+    /**
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
     public function weekCount(): int
     {
         $weekCount = $this->getWeekCount($this->getInvoices());
@@ -121,7 +125,7 @@ class VisitCounter
     }
 
 
-    private function getDayCount($array): array
+    private function getDayCount(array $array): array
     {
         $dayCount = [];
         $today = date("Y-m-d 00:00:00");
