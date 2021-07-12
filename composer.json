@@ -36,7 +36,7 @@
     "scripts": {
         "unit": "vendor/bin/phpunit",
         "coverage": "vendor/bin/php-coverage-checker build/logs/clover.xml 100",
-        "static-analyze": "vendor/bin/phpstan analyse --level=max src tests &&  vendor/bin/phpdd tests src",
+        "static-analyze": "",
         "style": "vendor/bin/ecs check",
         "style-fix": "vendor/bin/ecs check --fix",
         "security": "./local-php-security-checker --path=./composer.lock",
