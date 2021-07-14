@@ -23,7 +23,7 @@ use Otis22\VetmanagerRestApi\URI\OnlyModel;
 use function Otis22\VetmanagerUrl\url;
 
 
-class GetInvoices
+class InvoiceGetter
 {
     protected string $domain;
     protected WithAuth $api;
