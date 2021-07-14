@@ -1,6 +1,6 @@
 {
     "name": "abyzs/vetmanager-visits",
-    "description": "Php skeleton for small packages with most important qaulity",
+    "description": "Vetmanager - CRM for veterinary. It is a library for counting accepted customers for one day and for a week.",
     "license": "MIT",
     "authors": [
         {
