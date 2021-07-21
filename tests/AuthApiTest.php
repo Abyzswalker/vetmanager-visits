@@ -6,14 +6,14 @@ use PHPUnit\Framework\TestCase;
 use function getenv;
 
 
-class InvoiceGetterTest extends TestCase
+class AuthApiTest extends TestCase
 {
     protected $invoicegetter;
 
 
     protected function setUp(): void
     {
-        $this->invoicegetter = new InvoiceGetter(getenv('TEST_DOMAIN_NAME'), getenv('TEST_API_KEY'));
+        $this->invoicegetter = new AuthApi(getenv('TEST_DOMAIN_NAME'), getenv('TEST_API_KEY'));
     }
 
     public function testGetInvoices(): void

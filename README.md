@@ -6,9 +6,9 @@ composer require abyzs/vetmanager-visits
 ## Examples
 ```php
 use Abyzs\VetmanagerVisits\VisitCounter;
-use Abyzs\VetmanagerVisits\InvoiceGetter;
+use Abyzs\VetmanagerVisits\AuthApi;
 
-$domain = new InvoiceGetter('myclinic', 'api-key');
+$domain = new AuthApi('myclinic', 'api-key');
 $visit = new VisitCounter();
 
 /*
