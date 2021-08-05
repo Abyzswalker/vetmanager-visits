@@ -5,9 +5,6 @@ namespace Abyzs\VetmanagerVisits;
 use DateTime;
 use DateInterval;
 use GuzzleHttp\Client;
-use Otis22\VetmanagerRestApi\Headers\Auth\ApiKey;
-use Otis22\VetmanagerRestApi\Headers\Auth\ByApiKey;
-use Otis22\VetmanagerRestApi\Headers\WithAuth;
 use Otis22\VetmanagerRestApi\Model;
 use Otis22\VetmanagerRestApi\Model\Property;
 use Otis22\VetmanagerRestApi\Query\Filter\MoreThan;
@@ -21,33 +18,30 @@ use Otis22\VetmanagerRestApi\Query\Sort\DescBy;
 use Otis22\VetmanagerRestApi\Query\Sorts;
 use Otis22\VetmanagerRestApi\URI\OnlyModel;
 use function Otis22\VetmanagerUrl\url;
+use function Otis22\VetmanagerRestApi\byApiKey;
 
 
-class AuthApi
+final class AuthApi implements Auth
 {
-    protected string $domain;
-    protected WithAuth $api;
-    protected Client $client;
-    protected OnlyModel $uri;
+    private string $domain;
+    private $api;
+    private Client $client;
+    private OnlyModel $uri;
+    private $authHeaders;
     public array $result = [];
 
-    public function __construct(string $domain, string $api)
+
+    public function __construct(string $domain, $api)
     {
-        $this->domain = $domain;
-        $this->api = new WithAuth(
-            new ByApiKey(
-                new ApiKey($api)
-            )
-        );
+        $this->authHeaders = byApiKey($this->api = $api);
+        $this->client = new Client(['base_uri' => url($this->domain = $domain)->asString()]);
         $this->uri = new OnlyModel(
             new Model('invoice')
         );
     }
 
-    public function getInvoices(): array
+    public function giveInvoices(): array
     {
-        $this->client = new Client(['base_uri' => url($this->domain)->asString()]);
-
         $today = date("Y-m-d 00:00:00");
         $week = DateTime::createFromFormat('Y-m-d H:i:s', $today);
         $week->sub(new DateInterval('P7D'));
@@ -79,7 +73,7 @@ class AuthApi
                         'GET',
                         $this->uri->asString(),
                         [
-                            'headers' => $this->api->asKeyValue(),
+                            'headers' => $this->authHeaders->asKeyValue(),
                             'query' => $paged->asKeyValue()
                         ]
                     )->getBody()

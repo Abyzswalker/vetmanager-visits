@@ -5,8 +5,6 @@ namespace Abyzs\VetmanagerVisits;
 use DateTime;
 use DateInterval;
 use GuzzleHttp\Client;
-use Otis22\VetmanagerRestApi\Headers\Auth\ByToken;
-use Otis22\VetmanagerRestApi\Headers\WithAuth;
 use Otis22\VetmanagerRestApi\Model;
 use Otis22\VetmanagerRestApi\Model\Property;
 use Otis22\VetmanagerRestApi\Query\Filter\MoreThan;
@@ -19,41 +17,32 @@ use Otis22\VetmanagerRestApi\Query\Query;
 use Otis22\VetmanagerRestApi\Query\Sort\DescBy;
 use Otis22\VetmanagerRestApi\Query\Sorts;
 use Otis22\VetmanagerRestApi\URI\OnlyModel;
-use Otis22\VetmanagerToken\Credentials\AppName;
-use Otis22\VetmanagerToken\Token\Concrete;
 use function Otis22\VetmanagerUrl\url;
+use function Otis22\VetmanagerRestApi\byToken;
 
-class AuthToken
+
+final class AuthToken implements Auth
 {
-    protected string $domain;
-    protected $myapp;
-    protected $mytoken;
-    protected Client $client;
-    protected OnlyModel $uri;
+    private string $domain;
+    private $myapp;
+    private $mytoken;
+    private Client $client;
+    private OnlyModel $uri;
+    private $authHeaders;
     public array $result = [];
+
 
     public function __construct(string $domain, $myapp, $mytoken)
     {
-        $this->domain = $domain;
-        $this->myapp = $myapp;
-        $this->mytoken = $mytoken;
-
+        $this->authHeaders = byToken($this->myapp = $myapp, $this->mytoken = $mytoken);
+        $this->client = new Client(['base_uri' => url($this->domain = $domain)->asString()]);
         $this->uri = new OnlyModel(
             new Model('invoice')
         );
     }
 
-    public function getInvoices(): array
+    public function giveInvoices(): array
     {
-        $this->client = new Client(['base_uri' => url($this->domain)->asString()]);
-
-        $authHeaders = new WithAuth(
-            new ByToken(
-                new AppName($this->myapp),
-                new Concrete($this->mytoken)
-            )
-        );
-
         $today = date("Y-m-d 00:00:00");
         $week = DateTime::createFromFormat('Y-m-d H:i:s', $today);
         $week->sub(new DateInterval('P7D'));
@@ -85,7 +74,7 @@ class AuthToken
                         'GET',
                         $this->uri->asString(),
                         [
-                            'headers' => $authHeaders->asKeyValue(),
+                            'headers' => $this->authHeaders->asKeyValue(),
                             'query' => $paged->asKeyValue()
                         ]
                     )->getBody()

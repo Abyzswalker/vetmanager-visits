@@ -8,16 +8,16 @@ use function getenv;
 
 class AuthApiTest extends TestCase
 {
-    protected $invoicegetter;
+    protected $auth;
 
 
     protected function setUp(): void
     {
-        $this->invoicegetter = new AuthApi(getenv('TEST_DOMAIN_NAME'), getenv('TEST_API_KEY'));
+        $this->auth = new AuthApi(getenv('TEST_DOMAIN_NAME'), getenv('TEST_API_KEY'));
     }
 
     public function testGetInvoices(): void
     {
-        $this->assertIsArray($this->invoicegetter->getInvoices());
+        $this->assertIsArray($this->auth->giveInvoices());
     }
 }
