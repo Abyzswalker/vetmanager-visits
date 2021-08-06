@@ -21,4 +21,9 @@ final class ArrayFromDate
         ];
         return $arr;
     }
+
+    public static function today()
+    {
+
+    }
 }
