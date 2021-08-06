@@ -2,9 +2,10 @@
 
 namespace Abyzs\VetmanagerVisits;
 
-use DateTime;
 use DateInterval;
-use GuzzleHttp\Client;
+use DateTime;
+use GuzzleHttp\ClientInterface;
+use Otis22\VetmanagerRestApi\Headers;
 use Otis22\VetmanagerRestApi\Model;
 use Otis22\VetmanagerRestApi\Model\Property;
 use Otis22\VetmanagerRestApi\Query\Filter\MoreThan;
@@ -17,31 +18,25 @@ use Otis22\VetmanagerRestApi\Query\Query;
 use Otis22\VetmanagerRestApi\Query\Sort\DescBy;
 use Otis22\VetmanagerRestApi\Query\Sorts;
 use Otis22\VetmanagerRestApi\URI\OnlyModel;
-use function Otis22\VetmanagerUrl\url;
-use function Otis22\VetmanagerRestApi\byToken;
 
 
-final class AuthToken implements Auth
+final class Invoices
 {
-    private string $domain;
-    private $myapp;
-    private $mytoken;
-    private Client $client;
+    private $client;
+    private $auth;
     private OnlyModel $uri;
-    private $authHeaders;
     public array $result = [];
 
-
-    public function __construct(string $domain, $myapp, $mytoken)
+    public function __construct(ClientInterface $client, Headers $auth)
     {
-        $this->authHeaders = byToken($this->myapp = $myapp, $this->mytoken = $mytoken);
-        $this->client = new Client(['base_uri' => url($this->domain = $domain)->asString()]);
+        $this->client = $client;
+        $this->auth = $auth;
         $this->uri = new OnlyModel(
             new Model('invoice')
         );
     }
 
-    public function giveInvoices(): array
+    public function give(): array
     {
         $today = date("Y-m-d 00:00:00");
         $week = DateTime::createFromFormat('Y-m-d H:i:s', $today);
@@ -74,7 +69,7 @@ final class AuthToken implements Auth
                         'GET',
                         $this->uri->asString(),
                         [
-                            'headers' => $this->authHeaders->asKeyValue(),
+                            'headers' => $this->auth->asKeyValue(),
                             'query' => $paged->asKeyValue()
                         ]
                     )->getBody()
