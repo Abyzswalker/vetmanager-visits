@@ -14,7 +14,7 @@ use Otis22\VetmanagerRestApi\Headers\WithAuth;
 use PHPUnit\Framework\TestCase;
 
 
-class InvoiceTest extends TestCase
+class InvoicesTest extends TestCase
 {
     public function testGive(): void
     {
