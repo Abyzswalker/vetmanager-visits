@@ -21,21 +21,19 @@ class InvoicesTest extends TestCase
         $today = date("Y-m-d 00:00:00");
         $timeInterval = DateTime::createFromFormat('Y-m-d H:i:s', $today);
 
-        $arr = array(
-        'success' => 1,
-        'message' => 'test',
-        'data' =>
-            Array(
+        $arr = [
+            'success' => 1,
+            'message' => 'test',
+            'data' => [
                 'totalCount' => 1,
-                'invoice' =>
-                    Array(
+                'invoice' => [
                         'id' => 1,
                         'status' => 'exec',
                         'invoice_date' => $timeInterval
-                    )
-            )
-    );
-
+                    ]
+            ]
+        ];
+        
         $request = json_encode($arr);
         $mock = new MockHandler(
             [
